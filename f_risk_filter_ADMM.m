@@ -22,7 +22,7 @@ function v_estimate_admm = f_admm(v_estimate, m_estimate_covariance, v_norm_squa
     % Consensus-ADMM optimizer algorithm
 
     % Inicialization
-    rho             = 1e-3;
+    rho             = 0.5;
     v_estimate_admm = v_estimate;
     v_consensus     = zeros(size(v_estimate));
     v_dual_variable = 1e-3;

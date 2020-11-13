@@ -119,7 +119,7 @@ function f_plot_estimates(time_index, system, filter_state, opt_filter_state, fi
     % Plot the resulting estimates and compares them with the real value
     
     % Plot attributes
-    legend_label    = {'True Value', 'Suboptimal PF', 'Optimal PF', 'Risk-aware PF'};
+    legend_label    = {'True Value', 'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'};
     title_label     = {'NH-N tank 1', 'NH-N tank 2', 'NO3-N tank 1', 'NO3-N tank 2'};
     x_label         = {'Time [min]'};
     y_label         = {'Concentration [g l^{-1}]'};
@@ -149,7 +149,7 @@ function f_plot_risk(v_time_index, v_risk_sub, v_risk_opt, v_risk_risk)
     figure;
     plot(v_time_index(2:end), v_risk_sub, 'r', v_time_index(2:end), v_risk_opt, 'b', v_time_index(2:end), v_risk_risk, 'm', 'LineWidth', 1);
     title('Risk');
-    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware PF'})
+    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'})
     xlabel('Time [min]'); xlim([0 max(v_time_index)]);
     ylabel('E[ V_y (||X - X_{est}||^2) ]');
     grid on; grid minor;
@@ -174,7 +174,7 @@ function [v_mse_sub, v_mse_opt, v_mse_risk] = f_get_mse(v_time_index, system, m_
     plot(v_time_index(2:end), v_mse_sub , 'r', v_time_index(2:end), v_mse_opt, 'b',...
          v_time_index(2:end), v_mse_risk, 'm', 'LineWidth', 1);
     title('MSE');
-    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware PF'})
+    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'})
     xlabel('Time [min]'); xlim([0 max(v_time_index)]);
     ylabel('MSE'); 
     grid on; grid minor;
