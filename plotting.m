@@ -1,5 +1,5 @@
 clear all; clc;
-load('results5.mat')
+load('results1.mat')
 
 % Plot attributes
 legend_label    = {'True Value', 'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'};
@@ -37,3 +37,32 @@ legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'})
 xlabel('Time [min]'); xlim([0 max(v_time_index)]);
 ylabel('MSE'); 
 grid on; grid minor;
+
+% Compute averages for mse
+avg_mse_sub    =  mean(v_avg_mse_sub);
+avg_mse_opt    =  mean(v_avg_mse_opt);
+avg_mse_risk   =  mean(v_avg_mse_risk);
+
+% Compute averages for risk
+avg_risk_sub    =  mean(v_avg_risk_sub);
+avg_risk_opt    =  mean(v_avg_risk_opt);
+avg_risk_risk   =  mean(v_avg_risk_risk);
+
+% Print results
+fprintf('%s: %d\n', 'Particles', num_particles);
+fprintf('%s: %d\n', 'Epsilon', epsilon);
+fprintf('%s: %d\n', 'Rho', rho);
+
+metric = 'MSE';
+fprintf('------------Average %s----------------\n', metric);
+fprintf('Average %s for suboptimal particle filter: %d\n', metric, avg_mse_sub);
+fprintf('Average %s for optimal particle filter: %d\n', metric, avg_mse_opt);
+fprintf('Average %s for risk aware mmse: %d\n', metric, avg_mse_risk);
+
+fprintf('\n')
+
+metric = 'Risk';
+fprintf('------------Average %s----------------\n', metric);
+fprintf('Average %s for suboptimal particle filter: %d\n', metric, avg_risk_sub);
+fprintf('Average %s for optimal particle filter: %d\n', metric, avg_risk_opt);
+fprintf('Average %s for risk aware mmse: %d\n', metric, avg_risk_risk);

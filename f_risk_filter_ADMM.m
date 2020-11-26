@@ -1,4 +1,4 @@
-function v_estimate = f_risk_filter_ADMM(v_estimate, m_estimate_covariance, m_particles, v_weights, epsilon, max_iterations)
+function v_estimate = f_risk_filter_ADMM(v_estimate, m_estimate_covariance, m_particles, v_weights, epsilon, rho, max_iterations)
     % Compute the risk-aware estimate
     
     % E[ ||X||^2 * X | Y ]
@@ -13,16 +13,15 @@ function v_estimate = f_risk_filter_ADMM(v_estimate, m_estimate_covariance, m_pa
     
     % Compute risk-aware estimate via ADMM
     v_estimate = f_admm(v_estimate, m_estimate_covariance, v_norm_squared_particle, ...
-                        norm_squared_filter, var_squared_norm, epsilon, max_iterations);
+                        norm_squared_filter, var_squared_norm, epsilon, rho, max_iterations);
     
 end
 
 function v_estimate_admm = f_admm(v_estimate, m_estimate_covariance, v_norm_squared_particle, ...
-                                norm_squared_filter, var_squared_norm, epsilon, max_iterations)
+                                norm_squared_filter, var_squared_norm, epsilon, rho, max_iterations)
     % Consensus-ADMM optimizer algorithm
 
     % Inicialization
-    rho             = 0.5;
     v_estimate_admm = v_estimate;
     v_consensus     = zeros(size(v_estimate));
     v_dual_variable = 1e-3;
