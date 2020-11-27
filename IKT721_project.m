@@ -8,7 +8,7 @@ function IKT721_project()
     %% Parameters
     
     % Simulation parameters
-    num_simulation  = 1000; 
+    num_simulation  = 500; 
     
     % Time [minutes]
     time_start = 0; time_end = 720; time_delta = 1; 
@@ -33,7 +33,6 @@ function IKT721_project()
     v_time_opt      = zeros(1, length(v_time_index)-1);
     v_time_risk     = zeros(1, length(v_time_index)-1);
     
-    
     % Simulation estimations
     m_estimate_sub_sim  = zeros([steps, num_simulation]);
     m_estimate_opt_sim  = zeros([steps, num_simulation]);
@@ -50,15 +49,15 @@ function IKT721_project()
     m_mse_risk_sim      = zeros([length(v_time_index)-1, num_simulation]);   
     
     % Particle filter parameters
-    v_num_particles = [100 500 1000 5000];
+    v_num_particles = 5000; %[500 1000 5000];
     effective_ratio = 0.5;
     
     % Risk-aware filter parameter
-    v_epsilon       = [1 100 175 300];
+    v_epsilon       = 100; % [100 175 300];
     max_iterations  = 50;
     
-     % ADMM parameter
-    v_rho           = [1e-3 0.1 0.5 1.1];
+    % ADMM parameter
+    v_rho           = 1.1; % [0.1 0.5 1.1];
     
     %% Simulation
     fprintf('------------STARTING----------------');
@@ -137,23 +136,31 @@ function IKT721_project()
                 m_avg_estimate_sub  =  mean(m_estimate_sub, 3);
                 m_avg_estimate_opt  =  mean(m_estimate_opt, 3);
                 m_avg_estimate_risk =  mean(m_estimate_risk, 3);
-
-                % Compute average risk measure
-                [v_avg_risk_sub, v_avg_risk_opt, v_avg_risk_risk] = f_get_average(m_risk_sub_sim, m_risk_opt_sim, m_risk_risk_sim);
-
-                % Compute average MSE
-                [v_avg_mse_sub, v_avg_mse_opt, v_avg_mse_risk]    = f_get_average(m_mse_sub_sim, m_mse_opt_sim, m_mse_risk_sim);
-
-                % Compute average computational time
-                [v_avg_time_sub, v_avg_time_opt, v_avg_time_risk] = f_get_average(v_time_sub, v_time_opt, v_time_risk);
-
+                
                 % Save variables in workspace
-                filename = strcat('results/results_', string(num_particles), '_', string(epsilon), '_', string(rho), '.mat');
-                save(filename)
-                fprintf('------------SAVING RESULT----------------');
+%                 filename = strcat('results/results_', string(num_particles), '_', string(epsilon), '_', string(rho), '.mat');
+%                 save(filename)
+%                 fprintf('------------SAVING RESULT----------------');
             end
         end
     end
+    
+    % Compute average risk measure
+    [v_avg_risk_sub, v_avg_risk_opt, v_avg_risk_risk] = f_get_average(m_risk_sub_sim, m_risk_opt_sim, m_risk_risk_sim);
+
+    % Compute average MSE
+    [v_avg_mse_sub, v_avg_mse_opt, v_avg_mse_risk]    = f_get_average(m_mse_sub_sim, m_mse_opt_sim, m_mse_risk_sim);
+
+    % Compute average computational time
+    metric = 'Time';
+    [v_avg_time_sub, v_avg_time_opt, v_avg_time_risk] = f_get_average(v_time_sub, v_time_opt, v_time_risk);
+    f_print_results(metric, v_avg_time_sub, v_avg_time_opt, v_avg_time_risk)
+    
+    % Plot results
+    f_plot_estimates(v_time_index, system, m_avg_estimate_sub, m_avg_estimate_opt, m_avg_estimate_risk)
+    f_plot_mse(v_time_index, v_avg_mse_sub, v_avg_mse_opt, v_avg_mse_risk);
+    f_plot_risk(v_time_index, v_avg_risk_sub, v_avg_risk_opt, v_avg_risk_risk);
+    
     fprintf('------------DONE----------------');
 end
 
@@ -171,13 +178,13 @@ end
 function f_print_results(metric, v_avg_sub, v_avg_opt, v_avg_risk)
     % Print results in the terminal
     
-    fprintf('------------Average %s----------------\n', metric);
+    fprintf('\n------------Average %s----------------\n', metric);
     fprintf('Average %s for suboptimal particle filter: %d\n', metric, v_avg_sub);
     fprintf('Average %s for optimal particle filter: %d\n', metric, v_avg_opt);
     fprintf('Average %s for risk aware mmse: %d\n', metric, v_avg_risk);
 end
 
-function f_plot_estimates(time_index, system, filter_state, opt_filter_state, filter_risk_state)
+function f_plot_estimates(time_index, system, sub_filter_state, opt_filter_state, risk_filter_state)
     % Plot the resulting estimates and compares them with the real value
     
     % Plot attributes
@@ -189,8 +196,8 @@ function f_plot_estimates(time_index, system, filter_state, opt_filter_state, fi
     % Plotting
     for i = 1:4
         figure; 
-        plot(time_index(2:end), system.v_state_history(i, 2:end), '.-k', time_index(2:end), filter_state(i, :), 'r', ...
-             time_index(2:end), opt_filter_state(i, :), 'b', time_index(2:end), filter_risk_state(i, :), 'm', 'LineWidth', 1);
+        plot(time_index(2:end), system.v_state_history(i, 2:end), '.-k', time_index(2:end), sub_filter_state(i, :), 'r', ...
+             time_index(2:end), opt_filter_state(i, :), 'b', time_index(2:end), risk_filter_state(i, :), 'm', 'LineWidth', 1);
         title(title_label(i)); 
         legend(legend_label);
         xlabel(x_label); ylabel(y_label); xlim([0 max(time_index)]);

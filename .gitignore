@@ -3,3 +3,10 @@
 *.eps
 *.mat
 *.rtf
+printing.m
+plotting.m
+plotting.m
+ignore_functions/f_lower_bound.m
+ignore_functions/f_opt_filter.m
+ignore_functions/f_risk_cvx_filter.m
+ignore_functions/f_risk_filter.m
