@@ -8,7 +8,7 @@ function IKT721_project()
     %% Parameters
     
     % Simulation parameters
-    num_simulation  = 500; 
+    num_simulation  = 1; 
     
     % Time [minutes]
     time_start = 0; time_end = 720; time_delta = 1; 
@@ -138,9 +138,9 @@ function IKT721_project()
                 m_avg_estimate_risk =  mean(m_estimate_risk, 3);
                 
                 % Save variables in workspace
-%                 filename = strcat('results/results_', string(num_particles), '_', string(epsilon), '_', string(rho), '.mat');
-%                 save(filename)
-%                 fprintf('------------SAVING RESULT----------------');
+                filename = strcat('results/results_new_', string(num_particles), '_', string(epsilon), '_', string(rho), '.mat');
+                save(filename)
+                fprintf('------------SAVING RESULT----------------');
             end
         end
     end
@@ -188,7 +188,7 @@ function f_plot_estimates(time_index, system, sub_filter_state, opt_filter_state
     % Plot the resulting estimates and compares them with the real value
     
     % Plot attributes
-    legend_label    = {'True Value', 'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'};
+    legend_label    = {'True Value', 'Risk-aware MMSE', 'Suboptimal PF', 'Optimal PF'};
     title_label     = {'NH-N tank 1', 'NH-N tank 2', 'NO3-N tank 1', 'NO3-N tank 2'};
     x_label         = {'Time [min]'};
     y_label         = {'Concentration [g l^{-1}]'};
@@ -196,8 +196,8 @@ function f_plot_estimates(time_index, system, sub_filter_state, opt_filter_state
     % Plotting
     for i = 1:4
         figure; 
-        plot(time_index(2:end), system.v_state_history(i, 2:end), '.-k', time_index(2:end), sub_filter_state(i, :), 'r', ...
-             time_index(2:end), opt_filter_state(i, :), 'b', time_index(2:end), risk_filter_state(i, :), 'm', 'LineWidth', 1);
+        plot(time_index(2:end), system.v_state_history(i, 2:end), '.-k', time_index(2:end), risk_filter_state(i, :), 'm',...
+              time_index(2:end), sub_filter_state(i, :), 'r', time_index(2:end), opt_filter_state(i, :), 'b', 'LineWidth', 1);
         title(title_label(i)); 
         legend(legend_label);
         xlabel(x_label); ylabel(y_label); xlim([0 max(time_index)]);
@@ -216,9 +216,10 @@ function f_plot_risk(v_time_index, v_risk_sub, v_risk_opt, v_risk_risk)
 
     % Plot the results
     figure;
-    plot(v_time_index(2:end), v_risk_sub, 'r', v_time_index(2:end), v_risk_opt, 'b', v_time_index(2:end), v_risk_risk, 'm', 'LineWidth', 1);
+    plot(v_time_index(2:end), v_risk_risk, 'm', v_time_index(2:end), v_risk_sub, 'r',...
+         v_time_index(2:end), v_risk_opt, 'b', 'LineWidth', 1);
     title('Risk');
-    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'})
+    legend({'Risk-aware MMSE', 'Suboptimal PF', 'Optimal PF'})
     xlabel('Time [min]'); xlim([0 max(v_time_index)]);
     ylabel('E[ V_y (||X - X_{est}||^2) ]');
     grid on; grid minor;
@@ -242,10 +243,10 @@ end
 function f_plot_mse(v_time_index, v_mse_sub, v_mse_opt, v_mse_risk)
     % Plot MSE
     figure;
-    plot(v_time_index(2:end), v_mse_sub , 'r', v_time_index(2:end), v_mse_opt, 'b',...
-         v_time_index(2:end), v_mse_risk, 'm', 'LineWidth', 1);
+    plot(v_time_index(2:end), v_mse_risk, 'm', v_time_index(2:end), v_mse_sub , 'r',...
+         v_time_index(2:end), v_mse_opt, 'b','LineWidth', 1);
     title('MSE');
-    legend({'Suboptimal PF', 'Optimal PF', 'Risk-aware MMSE'})
+    legend({'Risk-aware MMSE', 'Suboptimal PF', 'Optimal PF'})
     xlabel('Time [min]'); xlim([0 max(v_time_index)]);
     ylabel('MSE'); 
     grid on; grid minor;
